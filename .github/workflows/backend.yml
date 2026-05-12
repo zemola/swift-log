@@ -27,5 +27,6 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: "swiftApi" # Placeholder, user can change in Azure
+          slot: "production"
           publish-profile: ${{ secrets.AZURE_APP_SERVICE_PUBLISH_PROFILE }}
           package: backend
