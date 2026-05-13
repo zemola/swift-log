@@ -18,6 +18,9 @@ function App() {
     setIsAuthenticated(false);
   };
 
+  //useEffect to check if user is authenticated
+
+
   if (!isAuthenticated) {
     return <Login onLogin={() => setIsAuthenticated(true)} />;
   }
@@ -40,7 +43,7 @@ function App() {
             <div className="w-8 h-8 rounded-full bg-indigo-100 border-2 border-indigo-200 flex justify-center items-center overflow-hidden">
               <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" alt="Avatar" className="w-full h-full object-cover" />
             </div>
-            <button 
+            <button
               onClick={handleLogout}
               className="text-slate-500 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-slate-100"
               title="Logout"
@@ -54,31 +57,31 @@ function App() {
       {/* Sub Header / Tabs */}
       <div className="bg-white border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex gap-4 h-12 items-center">
-          <button 
+          <button
             onClick={() => setCurrentTab('parse')}
             className={`text-sm font-medium h-full border-b-2 flex items-center px-2 transition-colors ${currentTab === 'parse' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
           >
             Paste & Parse
           </button>
-          <button 
+          <button
             onClick={() => setCurrentTab('single')}
             className={`text-sm font-medium h-full border-b-2 flex items-center px-2 transition-colors ${currentTab === 'single' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
           >
             Single Order
           </button>
-          <button 
+          <button
             onClick={() => setCurrentTab('dispatch')}
             className={`text-sm font-medium h-full border-b-2 flex items-center px-2 transition-colors ${currentTab === 'dispatch' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
           >
             Dispatcher Dashboard
           </button>
-          <button 
+          <button
             onClick={() => setCurrentTab('finance')}
             className={`text-sm font-medium h-full border-b-2 flex items-center px-2 transition-colors ${currentTab === 'finance' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
           >
             Finance
           </button>
-          <button 
+          <button
             onClick={() => setCurrentTab('onboarding')}
             className={`text-sm font-medium h-full border-b-2 flex items-center px-2 transition-colors ${currentTab === 'onboarding' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
           >
@@ -89,11 +92,11 @@ function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-y-auto">
-        {currentTab === 'parse' ? <PasteAndParse /> : 
-         currentTab === 'single' ? <CreateOrder /> : 
-         currentTab === 'dispatch' ? <DispatcherDashboard /> : 
-         currentTab === 'finance' ? <Finance /> : 
-         <Onboarding />}
+        {currentTab === 'parse' ? <PasteAndParse /> :
+          currentTab === 'single' ? <CreateOrder /> :
+            currentTab === 'dispatch' ? <DispatcherDashboard /> :
+              currentTab === 'finance' ? <Finance /> :
+                <Onboarding />}
       </main>
     </div>
   );
