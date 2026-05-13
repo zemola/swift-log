@@ -26,6 +26,6 @@ jobs:
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v2
         with:
-          app-name: "swiftApi"
-          publish-profile: ${{ secrets.AZURE_APP_SERVICE_PUBLISH_PROFILE2 }}
-          package: backend
+          app-name: "swiftApi" #this is the name of the app service in azure
+          publish-profile: ${{ secrets.AZURE_APP_SERVICE_PUBLISH_PROFILE2 }} #this is the name of the app service in azure
+          package: backend # this is the name of the package to deploy
