@@ -5,31 +5,44 @@ import bcrypt from 'bcryptjs';
 // Get telemetry for business admin (scoped to tenant)
 export const getAdminTelemetry = async (req: Request, res: Response) => {
   const tenantId = req.headers['x-tenant-id'] as string;
+  const { startDate, endDate } = req.query;
   
   if (!tenantId) {
     return res.status(400).json({ error: 'Tenant ID is required' });
   }
   
   try {
+    let dateFilter = '';
+    const queryParams: any[] = [tenantId];
+    
+    if (startDate && endDate) {
+      dateFilter = ' AND created_at BETWEEN $2 AND $3';
+      queryParams.push(startDate, endDate);
+    }
+    
     const usersCount = await query('SELECT COUNT(*) FROM users WHERE tenant_id = $1', [tenantId]);
-    const ordersCount = await query('SELECT COUNT(*) FROM orders WHERE tenant_id = $1', [tenantId]);
+    
+    const ordersQuery = `SELECT COUNT(*) FROM orders WHERE tenant_id = $1${dateFilter}`;
+    const ordersCount = await query(ordersQuery, queryParams);
     
     // Get orders processed per month for the last 6 months for this tenant
-    const chartData = await query(`
+    const chartQuery = `
       SELECT 
         TO_CHAR(created_at, 'Mon') as month,
         COUNT(*) as count
       FROM orders 
-      WHERE tenant_id = $1 AND created_at > NOW() - INTERVAL '6 months'
+      WHERE tenant_id = $1 AND created_at > NOW() - INTERVAL '6 months'${dateFilter}
       GROUP BY TO_CHAR(created_at, 'Mon'), DATE_TRUNC('month', created_at)
       ORDER BY DATE_TRUNC('month', created_at) ASC
-    `, [tenantId]);
+    `;
+    const chartData = await query(chartQuery, queryParams);
     
     res.status(200).json({
       data: {
         totalUsers: parseInt(usersCount.rows[0].count, 10),
         totalOrders: parseInt(ordersCount.rows[0].count, 10),
-        chartData: chartData.rows
+        chartData: chartData.rows,
+        activeRiders: 5 // Mocked for now
       }
     });
   } catch (error) {

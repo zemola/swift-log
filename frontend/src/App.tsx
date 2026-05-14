@@ -9,11 +9,13 @@ import SuperAdminDashboard from './components/SuperAdminDashboard';
 import CompanyManagement from './components/CompanyManagement';
 import CompleteRegistration from './components/CompleteRegistration';
 import LandingPage from './components/LandingPage';
+import Dashboard from './components/Dashboard';
+import OrderManagement from './components/OrderManagement';
 import ResetPassword from './components/ResetPassword';
 import { LogOut } from 'lucide-react';
 
 function App() {
-  const [currentTab, setCurrentTab] = useState(localStorage.getItem('userRole') === 'SuperAdmin' ? 'superadmin' : 'parse');
+  const [currentTab, setCurrentTab] = useState(localStorage.getItem('userRole') === 'SuperAdmin' ? 'superadmin' : 'dashboard');
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
@@ -88,22 +90,22 @@ function App() {
           ) : (
             <>
               <button
-                onClick={() => setCurrentTab('parse')}
-                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'parse' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                onClick={() => setCurrentTab('dashboard')}
+                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'dashboard' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
               >
-                Paste & Parse
+                Dashboard
               </button>
               <button
-                onClick={() => setCurrentTab('single')}
-                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'single' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                onClick={() => setCurrentTab('orders')}
+                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'orders' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
               >
-                Single Order
+                Orders
               </button>
               <button
                 onClick={() => setCurrentTab('dispatch')}
                 className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'dispatch' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
               >
-                Dispatcher Dashboard
+                Dispatcher
               </button>
               <button
                 onClick={() => setCurrentTab('finance')}
@@ -162,8 +164,8 @@ function App() {
             {userRole === 'SuperAdmin' ? (
               currentTab === 'superadmin' ? <SuperAdminDashboard /> : <CompanyManagement />
             ) :
-              currentTab === 'parse' ? <PasteAndParse /> :
-              currentTab === 'single' ? <CreateOrder /> :
+              currentTab === 'dashboard' ? <Dashboard /> :
+              currentTab === 'orders' ? <OrderManagement /> :
               currentTab === 'dispatch' ? <DispatcherDashboard /> :
               currentTab === 'finance' ? <Finance /> :
               <Onboarding />}
