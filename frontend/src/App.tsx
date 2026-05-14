@@ -10,13 +10,15 @@ import LandingPage from './components/LandingPage';
 import Dashboard from './components/Dashboard';
 import OrderManagement from './components/OrderManagement';
 import ResetPassword from './components/ResetPassword';
-import { LogOut } from 'lucide-react';
+import { LogOut, TrendingUp, Package, MapPin, DollarSign, Users, Menu, X, ChevronLeft, ChevronRight, BarChart3, Building } from 'lucide-react';
 
 function App() {
   const [currentTab, setCurrentTab] = useState(localStorage.getItem('userRole') === 'SuperAdmin' ? 'superadmin' : 'dashboard');
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -59,74 +61,101 @@ function App() {
   const userRole = localStorage.getItem('userRole');
 
   return (
-    <div className="flex h-screen bg-slate-50 w-full overflow-hidden">
+    <div className="flex h-screen bg-slate-50 w-full overflow-hidden relative">
       {/* Sidebar */}
-      <div className="w-64 bg-white/70 backdrop-blur-md border-r border-white/20 flex flex-col flex-shrink-0">
-        <div className="p-6 border-b border-white/20 flex items-center gap-2">
-          <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xl leading-none">L</span>
+      <div className={`
+        ${isSidebarCollapsed ? 'w-16' : 'w-64'} 
+        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        bg-white/70 backdrop-blur-md border-r border-white/20 flex flex-col flex-shrink-0 transition-all duration-300 ease-in-out z-30 absolute md:relative h-full
+      `}>
+        <div className="p-4 border-b border-white/20 flex items-center justify-between">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <span className="text-white font-bold text-xl leading-none">L</span>
+            </div>
+            {!isSidebarCollapsed && <span className="font-bold text-xl text-slate-900 truncate">SwiftLogistics</span>}
           </div>
-          <span className="font-bold text-xl text-slate-900">SwiftLogistics</span>
+          <button 
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            className="hidden md:flex p-1 rounded-full hover:bg-slate-100 text-slate-500"
+          >
+            {isSidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          </button>
+          <button 
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="md:hidden p-1 rounded-full hover:bg-slate-100 text-slate-500"
+          >
+            <X size={20} />
+          </button>
         </div>
         
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 p-2 space-y-1">
           {userRole === 'SuperAdmin' ? (
             <>
               <button
-                onClick={() => setCurrentTab('superadmin')}
-                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'superadmin' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                onClick={() => { setCurrentTab('superadmin'); setIsMobileMenuOpen(false); }}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'superadmin' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                title="Dashboard"
               >
-                Dashboard
+                <BarChart3 size={18} />
+                {!isSidebarCollapsed && <span>Dashboard</span>}
               </button>
               <button
-                onClick={() => setCurrentTab('companies')}
-                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'companies' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                onClick={() => { setCurrentTab('companies'); setIsMobileMenuOpen(false); }}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'companies' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                title="Companies"
               >
-                Companies
+                <Building size={18} />
+                {!isSidebarCollapsed && <span>Companies</span>}
               </button>
             </>
           ) : (
             <>
               <button
-                onClick={() => setCurrentTab('dashboard')}
-                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'dashboard' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                onClick={() => { setCurrentTab('dashboard'); setIsMobileMenuOpen(false); }}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'dashboard' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                title="Dashboard"
               >
-                Dashboard
+                <TrendingUp size={18} />
+                {!isSidebarCollapsed && <span>Dashboard</span>}
               </button>
               <button
-                onClick={() => setCurrentTab('orders')}
-                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'orders' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                onClick={() => { setCurrentTab('orders'); setIsMobileMenuOpen(false); }}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'orders' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                title="Orders"
               >
-                Orders
+                <Package size={18} />
+                {!isSidebarCollapsed && <span>Orders</span>}
               </button>
               <button
-                onClick={() => setCurrentTab('dispatch')}
-                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'dispatch' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                onClick={() => { setCurrentTab('dispatch'); setIsMobileMenuOpen(false); }}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'dispatch' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                title="Dispatcher"
               >
-                Dispatcher
+                <MapPin size={18} />
+                {!isSidebarCollapsed && <span>Dispatcher</span>}
               </button>
               <button
-                onClick={() => setCurrentTab('finance')}
-                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'finance' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                onClick={() => { setCurrentTab('finance'); setIsMobileMenuOpen(false); }}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'finance' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                title="Finance"
               >
-                Finance
+                <DollarSign size={18} />
+                {!isSidebarCollapsed && <span>Finance</span>}
               </button>
               <button
-                onClick={() => setCurrentTab('onboarding')}
-                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'onboarding' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                onClick={() => { setCurrentTab('onboarding'); setIsMobileMenuOpen(false); }}
+                className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'onboarding' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
+                title="Staff"
               >
-                Onboarding
+                <Users size={18} />
+                {!isSidebarCollapsed && <span>Staff</span>}
               </button>
             </>
           )}
         </nav>
         
-        <div className="p-4 border-t border-slate-200 space-y-2">
-          {userRole !== 'SuperAdmin' && (
-            <div className="text-xs text-slate-500 font-medium px-3 py-1 bg-slate-100 rounded-full text-center">
-              Tenant: Acme Logistics Ltd
-            </div>
-          )}
+        <div className="p-2 border-t border-white/20">
           <button
             onClick={() => setShowLogoutModal(true)}
             className="w-full flex items-center justify-center gap-2 text-slate-600 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-slate-50 text-sm font-medium"
@@ -141,9 +170,17 @@ function App() {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <header className="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 flex-shrink-0">
-          <h1 className="font-bold text-xl text-slate-900 capitalize">
-            {currentTab === 'superadmin' ? 'Super Admin Dashboard' : currentTab.replace(/([A-Z])/g, ' $1').trim()}
-          </h1>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="md:hidden p-2 rounded-lg hover:bg-slate-100 text-slate-600"
+            >
+              <Menu size={24} />
+            </button>
+            <h1 className="font-bold text-xl text-slate-900 capitalize">
+              {currentTab === 'superadmin' ? 'Super Admin Dashboard' : currentTab.replace(/([A-Z])/g, ' $1').trim()}
+            </h1>
+          </div>
           <div className="flex items-center gap-4">
             <div className="w-8 h-8 rounded-full bg-purple-100 border-2 border-purple-200 flex justify-center items-center overflow-hidden">
               <img src="https://ui-avatars.com/api/?name=User&background=0D8ABC&color=fff" alt="Avatar" className="w-full h-full object-cover" />

@@ -73,12 +73,7 @@ export const createOrder = async (req: Request, res: Response) => {
       [tenantId, item_desc, price, pickup_addr, dropoff_addr, payment_mode, status || 'Pending', customer_name, customer_phone]
     );
     
-    // Log status history
-    await queryTenant(
-      tenantId,
-      'INSERT INTO order_status_history (order_id, status) VALUES ($1, $2)',
-      [result.rows[0].id, status || 'Pending']
-    );
+    // Status history is logged on status changes, not on creation.
     
     res.status(201).json({
       message: 'Successfully created order',

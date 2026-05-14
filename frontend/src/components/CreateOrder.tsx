@@ -13,7 +13,7 @@ export default function CreateOrder({ onOrderCreated }: CreateOrderProps) {
   const [price, setPrice] = useState('');
   const [pickupAddr, setPickupAddr] = useState('Central Hub'); // Default
   const [dropoffAddr, setDropoffAddr] = useState('');
-  const [paymentMode, setPaymentMode] = useState('Cash');
+  const [paymentMode, setPaymentMode] = useState('COD');
   const [loading, setLoading] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -134,9 +134,9 @@ export default function CreateOrder({ onOrderCreated }: CreateOrderProps) {
               value={paymentMode}
               onChange={(e) => setPaymentMode(e.target.value)}
             >
-              <option value="Cash">Cash</option>
-              <option value="Card">Card</option>
-              <option value="Transfer">Transfer</option>
+              <option value="COD">Cash on Delivery (COD)</option>
+              <option value="Prepaid">Prepaid</option>
+              <option value="Pay_on_Pickup">Pay on Pickup</option>
             </select>
           </div>
         </div>

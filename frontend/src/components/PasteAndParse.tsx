@@ -65,7 +65,7 @@ export default function PasteAndParse({ onOrderCreated }: PasteAndParseProps) {
       price: 0,
       pickup_addr: 'Central Hub',
       dropoff_addr: order.dropoff,
-      payment_mode: 'Cash',
+      payment_mode: 'COD',
       status: 'Pending',
       customer_name: order.name,
       customer_phone: order.phone

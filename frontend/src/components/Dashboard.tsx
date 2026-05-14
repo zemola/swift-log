@@ -59,21 +59,26 @@ export default function Dashboard() {
         </div>
 
         {/* Date Range Filter */}
-        <div className="flex items-center gap-2 bg-white/70 backdrop-blur-md border border-white/20 p-2 rounded-xl shadow-sm">
-          <Calendar className="w-4 h-4 text-slate-400 ml-2" />
-          <input
-            type="date"
-            className="text-sm border-0 bg-transparent focus:ring-0 text-slate-700"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
-          <span className="text-slate-400">to</span>
-          <input
-            type="date"
-            className="text-sm border-0 bg-transparent focus:ring-0 text-slate-700"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
+        <div className="flex flex-col sm:flex-row items-center gap-2 bg-white/70 backdrop-blur-md border border-white/20 p-2 rounded-xl shadow-sm w-full sm:w-auto">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Calendar className="w-4 h-4 text-slate-400 ml-2" />
+            <input
+              type="date"
+              className="text-sm border-0 bg-transparent focus:ring-0 text-slate-700 w-full sm:w-auto"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </div>
+          <span className="text-slate-400 hidden sm:inline">to</span>
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <span className="text-slate-400 sm:hidden">To:</span>
+            <input
+              type="date"
+              className="text-sm border-0 bg-transparent focus:ring-0 text-slate-700 w-full sm:w-auto"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </div>
         </div>
       </div>
 

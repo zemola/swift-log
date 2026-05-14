@@ -103,7 +103,34 @@ export default function OrderManagement() {
             <Loader className="animate-spin h-6 w-6 text-purple-600" />
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+            {/* Cards for Mobile */}
+            <div className="md:hidden space-y-4">
+            {orders.map((order) => (
+              <div key={order.id} className="border border-slate-200 rounded-xl p-4 bg-white shadow-sm">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="font-medium text-slate-900">#{order.id.substring(0, 8)}</span>
+                  <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                    order.status === 'delivered' || order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
+                    order.status === 'pending' || order.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                    order.status === 'rejected' || order.status === 'Rejected' ? 'bg-red-100 text-red-800' : 'bg-slate-100 text-slate-800'
+                  }`}>
+                    {order.status}
+                  </span>
+                </div>
+                <div className="space-y-1 text-sm text-slate-500">
+                  <p><span className="font-medium text-slate-700">Customer:</span> {order.customer_name}</p>
+                  <p><span className="font-medium text-slate-700">Created:</span> {new Date(order.created_at).toLocaleDateString()}</p>
+                </div>
+              </div>
+            ))}
+            {orders.length === 0 && (
+              <div className="text-center py-4 text-slate-400">No orders found.</div>
+            )}
+          </div>
+          
+          {/* Table for Desktop */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200">
               <thead>
                 <tr>
@@ -135,6 +162,7 @@ export default function OrderManagement() {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </div>
 

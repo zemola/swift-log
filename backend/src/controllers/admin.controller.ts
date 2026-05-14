@@ -37,12 +37,17 @@ export const getAdminTelemetry = async (req: Request, res: Response) => {
     `;
     const chartData = await query(chartQuery, queryParams);
     
+    const activeRidersCount = await query(
+      "SELECT COUNT(*) FROM users WHERE tenant_id = $1 AND role = 'Rider' AND status = 'active'",
+      [tenantId]
+    );
+    
     res.status(200).json({
       data: {
         totalUsers: parseInt(usersCount.rows[0].count, 10),
         totalOrders: parseInt(ordersCount.rows[0].count, 10),
         chartData: chartData.rows,
-        activeRiders: 5 // Mocked for now
+        activeRiders: parseInt(activeRidersCount.rows[0].count, 10)
       }
     });
   } catch (error) {
