@@ -8,6 +8,7 @@ import Login from './components/Login';
 import SuperAdminDashboard from './components/SuperAdminDashboard';
 import CompleteRegistration from './components/CompleteRegistration';
 import LandingPage from './components/LandingPage';
+import ResetPassword from './components/ResetPassword';
 import { LogOut } from 'lucide-react';
 
 function App() {
@@ -29,6 +30,11 @@ function App() {
 
   const urlParams = new URLSearchParams(window.location.search);
   const token = urlParams.get('token');
+  const path = window.location.pathname;
+
+  if (path === '/reset-password') {
+    return <ResetPassword />;
+  }
 
   if (token) {
     return (
