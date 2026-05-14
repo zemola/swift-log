@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Truck, User, CheckCircle2 } from 'lucide-react';
+import { Truck, User } from 'lucide-react';
 
 export default function Onboarding() {
   const [companyName, setCompanyName] = useState('');
