@@ -1,4 +1,3 @@
-import React from 'react';
 import { ArrowRight, Truck, BarChart3, Shield, Users } from 'lucide-react';
 
 export default function LandingPage({ onGetStarted }: { onGetStarted: () => void }) {
