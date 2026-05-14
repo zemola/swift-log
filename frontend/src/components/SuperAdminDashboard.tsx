@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Truck, Shield, ShieldOff, Plus } from 'lucide-react';
+import { Shield, ShieldOff, Plus } from 'lucide-react';
 import { showToast } from '../utils/toast';
 
 interface Company {
