@@ -47,3 +47,37 @@ export const login = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+export const completeRegistration = async (req: Request, res: Response) => {
+  const { token, password } = req.body;
+  
+  if (!token || !password) {
+    return res.status(400).json({ error: 'Token and password are required' });
+  }
+  
+  try {
+    const result = await query(
+      'SELECT * FROM users WHERE invitation_token = $1 AND token_expires > NOW()',
+      [token]
+    );
+    
+    if (result.rowCount === 0) {
+      return res.status(400).json({ error: 'Invalid or expired token' });
+    }
+    
+    const user = result.rows[0];
+    
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
+    
+    await query(
+      'UPDATE users SET password_hash = $1, invitation_token = NULL, token_expires = NULL WHERE id = $2',
+      [hash, user.id]
+    );
+    
+    res.status(200).json({ message: 'Registration completed successfully. You can now log in.' });
+  } catch (error) {
+    console.error('Complete registration error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};

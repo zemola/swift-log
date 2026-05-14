@@ -6,6 +6,7 @@ import orderRoutes from './routes/order.routes';
 import companyRoutes from './routes/company.routes';
 import userRoutes from './routes/user.routes';
 import financeRoutes from './routes/finance.routes';
+import superadminRoutes from './routes/superadmin.routes';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/companies', companyRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/finance', financeRoutes);
+app.use('/api/superadmin', superadminRoutes);
 app.use('/api', orderRoutes); // This handles both /orders and /riders
 
 app.listen(PORT, () => {

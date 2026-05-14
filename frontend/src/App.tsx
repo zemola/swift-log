@@ -5,6 +5,8 @@ import Onboarding from './components/Onboarding';
 import CreateOrder from './components/CreateOrder';
 import Finance from './components/Finance';
 import Login from './components/Login';
+import SuperAdminDashboard from './components/SuperAdminDashboard';
+import CompleteRegistration from './components/CompleteRegistration';
 import { LogOut } from 'lucide-react';
 
 function App() {
@@ -21,8 +23,54 @@ function App() {
   //useEffect to check if user is authenticated
 
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('token');
+
+  if (token) {
+    return (
+      <CompleteRegistration 
+        token={token} 
+        onComplete={() => {
+          window.history.replaceState({}, document.title, "/");
+          window.location.reload();
+        }} 
+      />
+    );
+  }
+
   if (!isAuthenticated) {
     return <Login onLogin={() => setIsAuthenticated(true)} />;
+  }
+
+  const userRole = localStorage.getItem('userRole');
+
+  if (userRole === 'SuperAdmin') {
+    return (
+      <div className="min-h-screen flex flex-col bg-slate-50">
+        <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-xl leading-none">L</span>
+              </div>
+              <span className="font-bold text-xl tracking-tight text-slate-900">SwiftLogistics (Super Admin)</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={handleLogout}
+                className="text-slate-500 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-slate-100"
+                title="Logout"
+              >
+                <LogOut className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </header>
+        <main className="flex-1 overflow-y-auto">
+          <SuperAdminDashboard />
+        </main>
+      </div>
+    );
   }
 
   return (
