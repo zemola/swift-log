@@ -65,3 +65,19 @@ Provide a robust, scalable, and multi-tenant solution for logistics operators to
 - Reduction in manual data entry time (via Paste & Parse).
 - High rider adoption (via offline reliability).
 - Zero cross-tenant data leakage.
+
+## 6. Design System & Aesthetics (Vortex Theme)
+To ensure brand consistency, all UI elements must adhere to the following theme inspired by the "Vortex" sample:
+
+### 6.1 Colors
+- **Primary (Brand)**: `#7C3AED` (Vibrant Purple) - Used for primary buttons, active states, and branding.
+- **Secondary**: `#C084FC` (Lilac/Soft Purple) - Used for accents, highlights, and secondary gradients.
+- **Background**: `#F8FAFC` (Slate 50) with soft radial gradients of `#F5F3FF` (Purple 50).
+- **Text (Dark)**: `#0F172A` (Slate 900) - For high contrast headers.
+- **Text (Muted)**: `#475569` (Slate 600) - For body text and descriptions.
+
+### 6.2 Style Guidelines
+- **Glassmorphism**: Use semi-transparent white backgrounds with backdrop blur for cards and modals.
+  - Class: `bg-white/70 backdrop-blur-md border border-white/20 shadow-xl`
+- **Typography**: Large, bold headings with generous letter-spacing. Use clean sans-serif (Inter or similar).
+- **Borders**: Soft, rounded corners (`rounded-2xl` or `rounded-3xl`) for cards and containers.

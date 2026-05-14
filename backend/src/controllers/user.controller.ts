@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { queryTenant } from '../db';
+import { sendEmail } from '../utils/email';
 
 export const createUser = async (req: Request, res: Response) => {
   const { email, password, role } = req.body;
@@ -20,6 +21,24 @@ export const createUser = async (req: Request, res: Response) => {
       [tenantId, email, role, passwordHash]
     );
     
+    // Send email to Rider
+    if (role === 'Rider') {
+      const emailHtml = `
+        <h1>Welcome to SwiftLogistics</h1>
+        <p>You have been registered as a Rider.</p>
+        <p>Here are your login credentials for the Rider App:</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Password:</strong> ${password}</p>
+        <p>Please change your password after logging in for security.</p>
+      `;
+      
+      try {
+        await sendEmail(email, 'Your Rider Account Credentials', emailHtml);
+      } catch (emailErr) {
+        console.error('Failed to send email to rider:', emailErr);
+      }
+    }
+
     res.status(201).json({
       message: 'User created successfully',
       data: result.rows[0]

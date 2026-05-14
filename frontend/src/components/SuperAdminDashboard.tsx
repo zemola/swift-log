@@ -114,7 +114,7 @@ export default function SuperAdminDashboard() {
   return (
     <div className="max-w-6xl mx-auto py-8 px-4">
       <h1 className="text-3xl font-bold text-slate-900 mb-8 flex items-center gap-2">
-        <Shield className="w-8 h-8 text-indigo-600" />
+        <Shield className="w-8 h-8 text-purple-600" />
         Super Admin Dashboard
       </h1>
 
@@ -123,7 +123,7 @@ export default function SuperAdminDashboard() {
         <div className="lg:col-span-1">
           <div className="card sticky top-24">
             <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2 mb-4">
-              <Plus className="w-5 h-5 text-indigo-600" />
+              <Plus className="w-5 h-5 text-purple-600" />
               Onboard New Business
             </h2>
             <form onSubmit={handleCreateCompany} className="space-y-4">
@@ -197,7 +197,7 @@ export default function SuperAdminDashboard() {
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-500 flex gap-3">
                         <button
                           onClick={() => handleViewDetails(company.id)}
-                          className="text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
+                          className="text-purple-600 hover:text-purple-800 font-medium flex items-center gap-1"
                         >
                           <Eye className="w-4 h-4" /> View
                         </button>
@@ -250,7 +250,7 @@ export default function SuperAdminDashboard() {
               </div>
               <div className="p-4 bg-slate-50 rounded-lg">
                 <p className="text-sm text-slate-500">Total Orders</p>
-                <p className="font-bold text-xl text-indigo-600">{selectedCompanyDetails.stats.totalOrders}</p>
+                <p className="font-bold text-xl text-purple-600">{selectedCompanyDetails.stats.totalOrders}</p>
               </div>
             </div>
 
