@@ -145,3 +145,35 @@ export const getCompanyDetails = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+// Get global telemetry for super admin
+export const getTelemetry = async (req: Request, res: Response) => {
+  try {
+    const companiesCount = await query('SELECT COUNT(*) FROM companies');
+    const usersCount = await query('SELECT COUNT(*) FROM users');
+    const ordersCount = await query('SELECT COUNT(*) FROM orders');
+    
+    // Get companies created per month for the last 6 months
+    const chartData = await query(`
+      SELECT 
+        TO_CHAR(created_at, 'Mon') as month,
+        COUNT(*) as count
+      FROM companies 
+      WHERE created_at > NOW() - INTERVAL '6 months'
+      GROUP BY TO_CHAR(created_at, 'Mon'), DATE_TRUNC('month', created_at)
+      ORDER BY DATE_TRUNC('month', created_at) ASC
+    `);
+    
+    res.status(200).json({
+      data: {
+        totalCompanies: parseInt(companiesCount.rows[0].count, 10),
+        totalUsers: parseInt(usersCount.rows[0].count, 10),
+        totalOrders: parseInt(ordersCount.rows[0].count, 10),
+        chartData: chartData.rows
+      }
+    });
+  } catch (error) {
+    console.error('Get telemetry error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};

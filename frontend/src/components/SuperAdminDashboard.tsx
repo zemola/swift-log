@@ -1,291 +1,122 @@
 import { useState, useEffect } from 'react';
-import { Shield, ShieldOff, Plus, Eye } from 'lucide-react';
+import { Shield, Users, Truck, BarChart3, Loader } from 'lucide-react';
 import { showToast } from '../utils/toast';
 
-interface Company {
-  id: string;
-  name: string;
-  license_key: string;
-  status: string;
-  expires_at: string;
-  created_at: string;
-}
-
 export default function SuperAdminDashboard() {
-  const [companies, setCompanies] = useState<Company[]>([]);
-  const [newCompanyName, setNewCompanyName] = useState('');
-  const [ownerEmail, setOwnerEmail] = useState('');
-  const [expiresAt, setExpiresAt] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [selectedCompanyDetails, setSelectedCompanyDetails] = useState<any>(null);
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [telemetry, setTelemetry] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-  const token = localStorage.getItem('token');
 
   useEffect(() => {
-    fetchCompanies();
+    fetchTelemetry();
   }, []);
 
-  const fetchCompanies = async () => {
+  const fetchTelemetry = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/superadmin/companies`, {
+      const res = await fetch(`${API_URL}/api/superadmin/telemetry`, {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
       const data = await res.json();
       if (res.ok) {
-        setCompanies(data.data);
-      }
-    } catch (err) {
-      console.error('Failed to fetch companies:', err);
-    }
-  };
-
-  const handleCreateCompany = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const res = await fetch(`${API_URL}/api/superadmin/companies`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ name: newCompanyName, ownerEmail, expiresAt })
-      });
-      const data = await res.json();
-      if (res.ok) {
-        showToast('Company created and invitation simulated in logs!', 'success');
-        setNewCompanyName('');
-        setOwnerEmail('');
-        fetchCompanies();
+        setTelemetry(data.data);
       } else {
         showToast(`Error: ${data.error}`, 'error');
       }
     } catch (err) {
       console.error(err);
-      showToast('Failed to create company.', 'error');
+      showToast('Failed to fetch telemetry.', 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleUpdateStatus = async (id: string, currentStatus: string) => {
-    const newStatus = currentStatus === 'active' ? 'suspended' : 'active';
-    try {
-      const res = await fetch(`${API_URL}/api/superadmin/companies/${id}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ status: newStatus })
-      });
-      if (res.ok) {
-        fetchCompanies();
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleViewDetails = async (id: string) => {
-    try {
-      const res = await fetch(`${API_URL}/api/superadmin/companies/${id}/details`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setSelectedCompanyDetails(data.data);
-        setShowDetailsModal(true);
-      } else {
-        showToast(`Error: ${data.error}`, 'error');
-      }
-    } catch (err) {
-      console.error(err);
-      showToast('Failed to fetch details.', 'error');
-    }
-  };
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-full min-h-[400px]">
+        <Loader className="animate-spin h-8 w-8 text-purple-600" />
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-6xl mx-auto py-8 px-4">
+    <div className="p-6">
       <h1 className="text-3xl font-bold text-slate-900 mb-8 flex items-center gap-2">
         <Shield className="w-8 h-8 text-purple-600" />
         Super Admin Dashboard
       </h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Onboard New Business */}
-        <div className="lg:col-span-1">
-          <div className="card sticky top-24">
-            <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2 mb-4">
-              <Plus className="w-5 h-5 text-purple-600" />
-              Onboard New Business
-            </h2>
-            <form onSubmit={handleCreateCompany} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700">Company Name</label>
-                <input
-                  type="text"
-                  className="input-field mt-1"
-                  value={newCompanyName}
-                  onChange={(e) => setNewCompanyName(e.target.value)}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700">Owner Email</label>
-                <input
-                  type="email"
-                  className="input-field mt-1"
-                  value={ownerEmail}
-                  onChange={(e) => setOwnerEmail(e.target.value)}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700">Expiration Date</label>
-                <input
-                  type="date"
-                  className="input-field mt-1"
-                  value={expiresAt}
-                  onChange={(e) => setExpiresAt(e.target.value)}
-                  required
-                />
-              </div>
-              <button type="submit" className="btn-primary w-full" disabled={loading}>
-                Create & Send Invitation
-              </button>
-            </form>
+      {/* Telemetry Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="card flex items-center justify-between p-6">
+          <div>
+            <p className="text-xs font-medium text-slate-500 uppercase">Total Businesses</p>
+            <p className="text-3xl font-bold text-slate-900 mt-1">{telemetry?.totalCompanies || 0}</p>
+          </div>
+          <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600">
+            <Truck className="w-6 h-6" />
+          </div>
+        </div>
+        
+        <div className="card flex items-center justify-between p-6">
+          <div>
+            <p className="text-xs font-medium text-slate-500 uppercase">Total Users</p>
+            <p className="text-3xl font-bold text-slate-900 mt-1">{telemetry?.totalUsers || 0}</p>
+          </div>
+          <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600">
+            <Users className="w-6 h-6" />
           </div>
         </div>
 
-        {/* Business List */}
-        <div className="lg:col-span-2">
-          <div className="card">
-            <h2 className="text-xl font-bold text-slate-900 mb-4">Registered Businesses</h2>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Company</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">License Key</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Expires At</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200">
-                  {companies.map((company) => (
-                    <tr key={company.id}>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-slate-900">{company.name}</td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-500 font-mono">{company.license_key}</td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-500">
-                        {company.expires_at ? new Date(company.expires_at).toLocaleDateString() : 'Never'}
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          company.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
-                          {company.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-500 flex gap-3">
-                        <button
-                          onClick={() => handleViewDetails(company.id)}
-                          className="text-purple-600 hover:text-purple-800 font-medium flex items-center gap-1"
-                        >
-                          <Eye className="w-4 h-4" /> View
-                        </button>
-                        <button
-                          onClick={() => handleUpdateStatus(company.id, company.status)}
-                          className={`flex items-center gap-1 font-medium ${
-                            company.status === 'active' ? 'text-red-600 hover:text-red-800' : 'text-green-600 hover:text-green-800'
-                          }`}
-                        >
-                          {company.status === 'active' ? (
-                            <><ShieldOff className="w-4 h-4" /> Revoke</>
-                          ) : (
-                            <><Shield className="w-4 h-4" /> Restore</>
-                          )}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+        <div className="card flex items-center justify-between p-6">
+          <div>
+            <p className="text-xs font-medium text-slate-500 uppercase">Total Orders</p>
+            <p className="text-3xl font-bold text-slate-900 mt-1">{telemetry?.totalOrders || 0}</p>
+          </div>
+          <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600">
+            <BarChart3 className="w-6 h-6" />
           </div>
         </div>
       </div>
 
-      {/* Details Modal */}
-      {showDetailsModal && selectedCompanyDetails && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl shadow-lg max-w-4xl w-full max-h-[80vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-slate-900">
-                Business Details: {selectedCompanyDetails.company.name}
-              </h3>
-              <button
-                onClick={() => setShowDetailsModal(false)}
-                className="text-slate-500 hover:text-slate-700"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <div className="p-4 bg-slate-50 rounded-lg">
-                <p className="text-sm text-slate-500">License Key</p>
-                <p className="font-mono text-sm font-bold text-slate-900">{selectedCompanyDetails.company.license_key}</p>
-              </div>
-              <div className="p-4 bg-slate-50 rounded-lg">
-                <p className="text-sm text-slate-500">Status</p>
-                <p className="font-bold text-sm text-slate-900 capitalize">{selectedCompanyDetails.company.status}</p>
-              </div>
-              <div className="p-4 bg-slate-50 rounded-lg">
-                <p className="text-sm text-slate-500">Total Orders</p>
-                <p className="font-bold text-xl text-purple-600">{selectedCompanyDetails.stats.totalOrders}</p>
-              </div>
-            </div>
-
-            <h4 className="text-lg font-bold text-slate-900 mb-4">Staff Members</h4>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase">Email</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase">Role</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase">Joined</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200">
-                  {selectedCompanyDetails.users.map((user: any) => (
-                    <tr key={user.id}>
-                      <td className="px-4 py-3 text-sm text-slate-900">{user.email}</td>
-                      <td className="px-4 py-3 text-sm text-slate-500">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          user.role === 'Admin' ? 'bg-purple-100 text-purple-800' : 'bg-slate-100 text-slate-800'
-                        }`}>
-                          {user.role}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-sm text-slate-500">
-                        {new Date(user.created_at).toLocaleDateString()}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+      {/* Chart Section */}
+      <div className="card p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-lg font-bold text-slate-900">Business Growth</h2>
+          <p className="text-xs text-slate-500">Last 6 Months</p>
         </div>
-      )}
+        
+        {/* Custom CSS Bar Chart */}
+        <div className="h-64 flex items-end justify-between gap-4 px-4">
+          {telemetry?.chartData?.map((item: any, index: number) => {
+            const maxCount = Math.max(...telemetry.chartData.map((d: any) => d.count), 1);
+            const heightPercentage = (item.count / maxCount) * 100;
+            
+            return (
+              <div key={index} className="flex-1 flex flex-col items-center gap-2">
+                <div 
+                  className="w-full bg-gradient-to-t from-purple-500 to-purple-600 rounded-t-lg transition-all duration-500 hover:from-purple-600 hover:to-purple-700 relative group"
+                  style={{ height: `${heightPercentage}%`, minHeight: '10%' }}
+                >
+                  {/* Tooltip */}
+                  <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                    {item.count}
+                  </div>
+                </div>
+                <p className="text-xs font-medium text-slate-600">{item.month}</p>
+              </div>
+            );
+          })}
+          
+          {(!telemetry?.chartData || telemetry.chartData.length === 0) && (
+            <div className="w-full h-full flex items-center justify-center text-slate-400">
+              No data available
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

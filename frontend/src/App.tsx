@@ -6,6 +6,7 @@ import CreateOrder from './components/CreateOrder';
 import Finance from './components/Finance';
 import Login from './components/Login';
 import SuperAdminDashboard from './components/SuperAdminDashboard';
+import CompanyManagement from './components/CompanyManagement';
 import CompleteRegistration from './components/CompleteRegistration';
 import LandingPage from './components/LandingPage';
 import ResetPassword from './components/ResetPassword';
@@ -70,12 +71,20 @@ function App() {
         
         <nav className="flex-1 p-4 space-y-1">
           {userRole === 'SuperAdmin' ? (
-            <button
-              onClick={() => setCurrentTab('superadmin')}
-              className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'superadmin' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
-            >
-              Super Admin
-            </button>
+            <>
+              <button
+                onClick={() => setCurrentTab('superadmin')}
+                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'superadmin' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
+              >
+                Dashboard
+              </button>
+              <button
+                onClick={() => setCurrentTab('companies')}
+                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'companies' ? 'bg-purple-50 text-purple-600' : 'text-slate-600 hover:bg-slate-50'}`}
+              >
+                Companies
+              </button>
+            </>
           ) : (
             <>
               <button
@@ -150,7 +159,9 @@ function App() {
           <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-50 pointer-events-none"></div>
 
           <div className="relative z-10">
-            {userRole === 'SuperAdmin' ? <SuperAdminDashboard /> :
+            {userRole === 'SuperAdmin' ? (
+              currentTab === 'superadmin' ? <SuperAdminDashboard /> : <CompanyManagement />
+            ) :
               currentTab === 'parse' ? <PasteAndParse /> :
               currentTab === 'single' ? <CreateOrder /> :
               currentTab === 'dispatch' ? <DispatcherDashboard /> :
