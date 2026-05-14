@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Package, MapPin, Phone, User, CheckCircle2, ClipboardPaste, Loader } from 'lucide-react';
+import { Package, CheckCircle2, ClipboardPaste, Loader } from 'lucide-react';
 import { showToast } from '../utils/toast';
 
 interface ParsedOrder {
@@ -42,7 +42,7 @@ export default function PasteAndParse({ onOrderCreated }: PasteAndParseProps) {
     if (orders.length > 0) {
       showToast(`Parsed ${orders.length} orders!`, 'success');
     } else {
-      showToast('No orders found in the text.', 'warning');
+      showToast('No orders found in the text.', 'info');
     }
   };
 
