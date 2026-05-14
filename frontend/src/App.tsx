@@ -10,14 +10,16 @@ import CompleteRegistration from './components/CompleteRegistration';
 import { LogOut } from 'lucide-react';
 
 function App() {
-  const [currentTab, setCurrentTab] = useState('parse');
+  const [currentTab, setCurrentTab] = useState(localStorage.getItem('userRole') === 'SuperAdmin' ? 'superadmin' : 'parse');
   const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('tenantId');
     localStorage.removeItem('userRole');
     setIsAuthenticated(false);
+    setShowLogoutModal(false);
   };
 
   //useEffect to check if user is authenticated
@@ -44,108 +46,128 @@ function App() {
 
   const userRole = localStorage.getItem('userRole');
 
-  if (userRole === 'SuperAdmin') {
-    return (
-      <div className="min-h-screen flex flex-col bg-slate-50">
-        <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-10">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl leading-none">L</span>
-              </div>
-              <span className="font-bold text-xl tracking-tight text-slate-900">SwiftLogistics (Super Admin)</span>
-            </div>
-            <div className="flex items-center gap-4">
+  return (
+    <div className="flex h-screen bg-slate-50 w-full overflow-hidden">
+      {/* Sidebar */}
+      <div className="w-64 bg-white border-r border-slate-200 flex flex-col flex-shrink-0">
+        <div className="p-6 border-b border-slate-200 flex items-center gap-2">
+          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-xl leading-none">L</span>
+          </div>
+          <span className="font-bold text-xl text-slate-900">SwiftLogistics</span>
+        </div>
+        
+        <nav className="flex-1 p-4 space-y-1">
+          {userRole === 'SuperAdmin' ? (
+            <button
+              onClick={() => setCurrentTab('superadmin')}
+              className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'superadmin' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}
+            >
+              Super Admin
+            </button>
+          ) : (
+            <>
               <button
-                onClick={handleLogout}
-                className="text-slate-500 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-slate-100"
-                title="Logout"
+                onClick={() => setCurrentTab('parse')}
+                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'parse' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}
               >
-                <LogOut className="w-5 h-5" />
+                Paste & Parse
               </button>
+              <button
+                onClick={() => setCurrentTab('single')}
+                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'single' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}
+              >
+                Single Order
+              </button>
+              <button
+                onClick={() => setCurrentTab('dispatch')}
+                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'dispatch' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}
+              >
+                Dispatcher Dashboard
+              </button>
+              <button
+                onClick={() => setCurrentTab('finance')}
+                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'finance' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}
+              >
+                Finance
+              </button>
+              <button
+                onClick={() => setCurrentTab('onboarding')}
+                className={`w-full text-left px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${currentTab === 'onboarding' ? 'bg-indigo-50 text-indigo-600' : 'text-slate-600 hover:bg-slate-50'}`}
+              >
+                Onboarding
+              </button>
+            </>
+          )}
+        </nav>
+        
+        <div className="p-4 border-t border-slate-200 space-y-2">
+          {userRole !== 'SuperAdmin' && (
+            <div className="text-xs text-slate-500 font-medium px-3 py-1 bg-slate-100 rounded-full text-center">
+              Tenant: Acme Logistics Ltd
+            </div>
+          )}
+          <button
+            onClick={() => setShowLogoutModal(true)}
+            className="w-full flex items-center justify-center gap-2 text-slate-600 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-slate-50 text-sm font-medium"
+          >
+            <LogOut className="w-5 h-5" />
+            Logout
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <header className="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 flex-shrink-0">
+          <h1 className="font-bold text-xl text-slate-900 capitalize">
+            {currentTab === 'superadmin' ? 'Super Admin Dashboard' : currentTab.replace(/([A-Z])/g, ' $1').trim()}
+          </h1>
+          <div className="flex items-center gap-4">
+            <div className="w-8 h-8 rounded-full bg-indigo-100 border-2 border-indigo-200 flex justify-center items-center overflow-hidden">
+              <img src="https://ui-avatars.com/api/?name=User&background=0D8ABC&color=fff" alt="Avatar" className="w-full h-full object-cover" />
             </div>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto">
-          <SuperAdminDashboard />
+
+        {/* Content Area */}
+        <main className="flex-1 overflow-y-auto bg-slate-50">
+          {userRole === 'SuperAdmin' ? <SuperAdminDashboard /> :
+            currentTab === 'parse' ? <PasteAndParse /> :
+            currentTab === 'single' ? <CreateOrder /> :
+            currentTab === 'dispatch' ? <DispatcherDashboard /> :
+            currentTab === 'finance' ? <Finance /> :
+            <Onboarding />}
         </main>
       </div>
-    );
-  }
 
-  return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
-      {/* Top Navigation Bar */}
-      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl leading-none">L</span>
+      {/* Logout Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-lg max-w-sm w-full">
+            <h3 className="text-lg font-bold text-slate-900 mb-2">Confirm Logout</h3>
+            <p className="text-sm text-slate-600 mb-6">Are you sure you want to log out of your session?</p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg"
+              >
+                Logout
+              </button>
             </div>
-            <span className="font-bold text-xl tracking-tight text-slate-900">SwiftLogistics</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="text-sm text-slate-500 font-medium px-3 py-1 bg-slate-100 rounded-full">
-              Tenant: <span className="text-slate-800">Acme Logistics Ltd</span>
-            </div>
-            <div className="w-8 h-8 rounded-full bg-indigo-100 border-2 border-indigo-200 flex justify-center items-center overflow-hidden">
-              <img src="https://ui-avatars.com/api/?name=Admin+User&background=0D8ABC&color=fff" alt="Avatar" className="w-full h-full object-cover" />
-            </div>
-            <button
-              onClick={handleLogout}
-              className="text-slate-500 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-slate-100"
-              title="Logout"
-            >
-              <LogOut className="w-5 h-5" />
-            </button>
           </div>
         </div>
-      </header>
+      )}
 
-      {/* Sub Header / Tabs */}
-      <div className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex gap-4 h-12 items-center">
-          <button
-            onClick={() => setCurrentTab('parse')}
-            className={`text-sm font-medium h-full border-b-2 flex items-center px-2 transition-colors ${currentTab === 'parse' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
-          >
-            Paste & Parse
-          </button>
-          <button
-            onClick={() => setCurrentTab('single')}
-            className={`text-sm font-medium h-full border-b-2 flex items-center px-2 transition-colors ${currentTab === 'single' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
-          >
-            Single Order
-          </button>
-          <button
-            onClick={() => setCurrentTab('dispatch')}
-            className={`text-sm font-medium h-full border-b-2 flex items-center px-2 transition-colors ${currentTab === 'dispatch' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
-          >
-            Dispatcher Dashboard
-          </button>
-          <button
-            onClick={() => setCurrentTab('finance')}
-            className={`text-sm font-medium h-full border-b-2 flex items-center px-2 transition-colors ${currentTab === 'finance' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
-          >
-            Finance
-          </button>
-          <button
-            onClick={() => setCurrentTab('onboarding')}
-            className={`text-sm font-medium h-full border-b-2 flex items-center px-2 transition-colors ${currentTab === 'onboarding' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700'}`}
-          >
-            Onboarding
-          </button>
-        </div>
-      </div>
-
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto">
-        {currentTab === 'parse' ? <PasteAndParse /> :
-          currentTab === 'single' ? <CreateOrder /> :
-            currentTab === 'dispatch' ? <DispatcherDashboard /> :
-              currentTab === 'finance' ? <Finance /> :
-                <Onboarding />}
-      </main>
+      {/* Toast Container */}
+      <div id="toast-container" className="fixed bottom-4 right-4 z-50 space-y-2"></div>
     </div>
   );
 }

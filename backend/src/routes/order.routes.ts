@@ -11,12 +11,14 @@ import {
 } from '../controllers/order.controller';
 import { authMiddleware } from '../middleware/auth.middleware';
 import { tenantMiddleware } from '../middleware/tenant.middleware';
+import { checkExpirationMiddleware } from '../middleware/expiration.middleware';
 
 const router = Router();
 
 // Apply both middlewares to all order and rider routes
 router.use(authMiddleware);
 router.use(tenantMiddleware);
+router.use(checkExpirationMiddleware);
 
 // Order routes
 router.get('/orders', getOrders);

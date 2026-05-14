@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Truck, Shield, ShieldOff, Plus } from 'lucide-react';
+import { showToast } from '../utils/toast';
 
 interface Company {
   id: string;
   name: string;
   license_key: string;
   status: string;
+  expires_at: string;
   created_at: string;
 }
 
@@ -13,6 +15,7 @@ export default function SuperAdminDashboard() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [newCompanyName, setNewCompanyName] = useState('');
   const [ownerEmail, setOwnerEmail] = useState('');
+  const [expiresAt, setExpiresAt] = useState('');
   const [loading, setLoading] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -48,20 +51,20 @@ export default function SuperAdminDashboard() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ name: newCompanyName, ownerEmail })
+        body: JSON.stringify({ name: newCompanyName, ownerEmail, expiresAt })
       });
       const data = await res.json();
       if (res.ok) {
-        alert('Company created and invitation simulated in logs!');
+        showToast('Company created and invitation simulated in logs!', 'success');
         setNewCompanyName('');
         setOwnerEmail('');
         fetchCompanies();
       } else {
-        alert(`Error: ${data.error}`);
+        showToast(`Error: ${data.error}`, 'error');
       }
     } catch (err) {
       console.error(err);
-      alert('Failed to create company.');
+      showToast('Failed to create company.', 'error');
     } finally {
       setLoading(false);
     }
@@ -122,6 +125,16 @@ export default function SuperAdminDashboard() {
                   required
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700">Expiration Date</label>
+                <input
+                  type="date"
+                  className="input-field mt-1"
+                  value={expiresAt}
+                  onChange={(e) => setExpiresAt(e.target.value)}
+                  required
+                />
+              </div>
               <button type="submit" className="btn-primary w-full" disabled={loading}>
                 Create & Send Invitation
               </button>
@@ -139,6 +152,7 @@ export default function SuperAdminDashboard() {
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Company</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">License Key</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Expires At</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Status</th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Actions</th>
                   </tr>
@@ -148,6 +162,9 @@ export default function SuperAdminDashboard() {
                     <tr key={company.id}>
                       <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-slate-900">{company.name}</td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-500 font-mono">{company.license_key}</td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-500">
+                        {company.expires_at ? new Date(company.expires_at).toLocaleDateString() : 'Never'}
+                      </td>
                       <td className="px-4 py-4 whitespace-nowrap">
                         <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
                           company.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'

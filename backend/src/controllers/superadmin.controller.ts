@@ -15,7 +15,7 @@ export const listCompanies = async (req: Request, res: Response) => {
 
 // Create company and generate invitation token
 export const createCompanyWithInvitation = async (req: Request, res: Response) => {
-  const { name, ownerEmail } = req.body;
+  const { name, ownerEmail, expiresAt } = req.body;
   
   if (!name || !ownerEmail) {
     return res.status(400).json({ error: 'Company name and owner email are required' });
@@ -25,8 +25,8 @@ export const createCompanyWithInvitation = async (req: Request, res: Response) =
     // 1. Create Company
     const licenseKey = Math.random().toString(36).substring(2, 12).toUpperCase();
     const companyResult = await query(
-      'INSERT INTO companies (name, license_key) VALUES ($1, $2) RETURNING *',
-      [name, licenseKey]
+      'INSERT INTO companies (name, license_key, expires_at) VALUES ($1, $2, $3) RETURNING *',
+      [name, licenseKey, expiresAt]
     );
     
     const company = companyResult.rows[0];

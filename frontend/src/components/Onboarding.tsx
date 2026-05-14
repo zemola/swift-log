@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Truck, User } from 'lucide-react';
+import { showToast } from '../utils/toast';
 
 export default function Onboarding() {
   const [companyName, setCompanyName] = useState('');
@@ -22,16 +23,16 @@ export default function Onboarding() {
       });
       const data = await res.json();
       if (res.ok) {
-        alert(`Company created! License Key: ${data.data.license_key}`);
+        showToast(`Company created! License Key: ${data.data.license_key}`, 'success');
         setCompanyName('');
         // Save tenant ID to local storage to simulate "logging in" as that company
         localStorage.setItem('tenantId', data.data.id);
       } else {
-        alert(`Error: ${data.error}`);
+        showToast(`Error: ${data.error}`, 'error');
       }
     } catch (err) {
       console.error(err);
-      alert('Failed to create company.');
+      showToast('Failed to create company.', 'error');
     } finally {
       setLoading(false);
     }
@@ -53,15 +54,15 @@ export default function Onboarding() {
       });
       const data = await res.json();
       if (res.ok) {
-        alert(`User created successfully!`);
+        showToast(`User created successfully!`, 'success');
         setUserEmail('');
         setUserPassword('');
       } else {
-        alert(`Error: ${data.error}`);
+        showToast(`Error: ${data.error}`, 'error');
       }
     } catch (err) {
       console.error(err);
-      alert('Failed to create user.');
+      showToast('Failed to create user.', 'error');
     } finally {
       setLoading(false);
     }
