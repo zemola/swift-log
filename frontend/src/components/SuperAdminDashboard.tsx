@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Shield, ShieldOff, Plus } from 'lucide-react';
+import { Shield, ShieldOff, Plus, Eye } from 'lucide-react';
 import { showToast } from '../utils/toast';
 
 interface Company {
@@ -17,6 +17,8 @@ export default function SuperAdminDashboard() {
   const [ownerEmail, setOwnerEmail] = useState('');
   const [expiresAt, setExpiresAt] = useState('');
   const [loading, setLoading] = useState(false);
+  const [selectedCompanyDetails, setSelectedCompanyDetails] = useState<any>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
   const token = localStorage.getItem('token');
@@ -86,6 +88,26 @@ export default function SuperAdminDashboard() {
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleViewDetails = async (id: string) => {
+    try {
+      const res = await fetch(`${API_URL}/api/superadmin/companies/${id}/details`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setSelectedCompanyDetails(data.data);
+        setShowDetailsModal(true);
+      } else {
+        showToast(`Error: ${data.error}`, 'error');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to fetch details.', 'error');
     }
   };
 
@@ -172,7 +194,13 @@ export default function SuperAdminDashboard() {
                           {company.status}
                         </span>
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-500">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-500 flex gap-3">
+                        <button
+                          onClick={() => handleViewDetails(company.id)}
+                          className="text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
+                        >
+                          <Eye className="w-4 h-4" /> View
+                        </button>
                         <button
                           onClick={() => handleUpdateStatus(company.id, company.status)}
                           className={`flex items-center gap-1 font-medium ${
@@ -194,6 +222,71 @@ export default function SuperAdminDashboard() {
           </div>
         </div>
       </div>
+    </div>
+
+      {/* Details Modal */}
+      {showDetailsModal && selectedCompanyDetails && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-lg max-w-4xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-slate-900">
+                Business Details: {selectedCompanyDetails.company.name}
+              </h3>
+              <button
+                onClick={() => setShowDetailsModal(false)}
+                className="text-slate-500 hover:text-slate-700"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <div className="p-4 bg-slate-50 rounded-lg">
+                <p className="text-sm text-slate-500">License Key</p>
+                <p className="font-mono text-sm font-bold text-slate-900">{selectedCompanyDetails.company.license_key}</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-lg">
+                <p className="text-sm text-slate-500">Status</p>
+                <p className="font-bold text-sm text-slate-900 capitalize">{selectedCompanyDetails.company.status}</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-lg">
+                <p className="text-sm text-slate-500">Total Orders</p>
+                <p className="font-bold text-xl text-indigo-600">{selectedCompanyDetails.stats.totalOrders}</p>
+              </div>
+            </div>
+
+            <h4 className="text-lg font-bold text-slate-900 mb-4">Staff Members</h4>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-slate-200">
+                <thead>
+                  <tr>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase">Email</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase">Role</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase">Joined</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  {selectedCompanyDetails.users.map((user: any) => (
+                    <tr key={user.id}>
+                      <td className="px-4 py-3 text-sm text-slate-900">{user.email}</td>
+                      <td className="px-4 py-3 text-sm text-slate-500">
+                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                          user.role === 'Admin' ? 'bg-purple-100 text-purple-800' : 'bg-slate-100 text-slate-800'
+                        }`}>
+                          {user.role}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-slate-500">
+                        {new Date(user.created_at).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

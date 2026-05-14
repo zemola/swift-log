@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { query } from '../db';
 import crypto from 'crypto';
+import { sendEmail } from '../utils/email';
 
 // List all companies
 export const listCompanies = async (req: Request, res: Response) => {
@@ -41,8 +42,30 @@ export const createCompanyWithInvitation = async (req: Request, res: Response) =
       [ownerEmail, 'Admin', company.id, token, expires]
     );
     
-    // 3. TODO: Send Email
-    console.log(`[EMAIL SIMULATION] Send invitation to ${ownerEmail}. Token: ${token}`);
+    // 3. Send Email
+    const registrationLink = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/?token=${token}`;
+    const emailHtml = `
+      <h1>Welcome to SwiftLogistics</h1>
+      <p>You have been onboarded as a business owner on SwiftLogistics.</p>
+      <p>Please click the link below to complete your registration and set your password:</p>
+      <a href="${registrationLink}">${registrationLink}</a>
+      <p>This link will expire in 24 hours.</p>
+    `;
+    
+    try {
+      await sendEmail(ownerEmail, 'Complete Your Registration - SwiftLogistics', emailHtml);
+    } catch (emailErr) {
+      console.error('Failed to send email:', emailErr);
+      // We still return success but note that email failed
+      return res.status(201).json({
+        message: 'Company created but invitation email failed to send',
+        data: {
+          company,
+          invitationToken: token,
+          emailError: true
+        }
+      });
+    }
     
     res.status(201).json({
       message: 'Company created and invitation sent',
@@ -82,6 +105,43 @@ export const updateCompanyStatus = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Update company status error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+// Get company details (users and stats)
+export const getCompanyDetails = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  
+  try {
+    // 1. Get Company Info
+    const companyResult = await query('SELECT * FROM companies WHERE id = $1', [id]);
+    if (companyResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Company not found' });
+    }
+    const company = companyResult.rows[0];
+    
+    // 2. Get Users
+    const usersResult = await query(
+      'SELECT id, email, role, created_at FROM users WHERE tenant_id = $1 ORDER BY created_at DESC',
+      [id]
+    );
+    
+    // 3. Get Order Count
+    const ordersResult = await query('SELECT COUNT(*) FROM orders WHERE tenant_id = $1', [id]);
+    const orderCount = parseInt(ordersResult.rows[0].count, 10);
+    
+    res.status(200).json({
+      data: {
+        company,
+        users: usersResult.rows,
+        stats: {
+          totalOrders: orderCount
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Get company details error:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
